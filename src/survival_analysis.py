@@ -13,7 +13,9 @@ os.makedirs("results", exist_ok=True)
 # 1. Load and prepare data
 df = load_lung()
 df.columns = df.columns.str.replace(".", "_", regex=False)
-df["event"] = (df["status"] == 2).astype(int)   # 2 = death, 1 = censored
+# lifelines may code status as 0/1 (1 = death) or 1/2 (2 = death)
+df["event"] = (df["status"] == df["status"].max()).astype(int)
+print("status values:", sorted(df["status"].unique()), "| sex values:", sorted(df["sex"].unique()))
 df = df.drop(columns=["status", "inst"]).dropna()  # complete cases only
 print("Patients:", len(df), "| Events:", df["event"].sum())
 
